@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>My first three.js app</title>
+    <style>
+        body { margin: 0; }
+        canvas { width: 100%; height: 100% }
+    </style>
+</head>
+<body>
+<script src="js/three.js"></script>
+<script>
+    var scene = new THREE.Scene();
+
+    /*Just a regular perspective camera is needed*/
+    var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+    var clock = new THREE.Clock();
+
+    /*set up the renderer so that way we can cast shadows on other objects for fun*/
+    var renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true, alpha:true});
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.gammaInput = true;
+    renderer.gammaOutput = true;
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.setClearColor(0x050505, 1.0);
+    document.body.appendChild( renderer.domElement );
+
+    /*The sun is really two objects: the material, and the point light*/
+    var sunGeometry = new THREE.SphereGeometry( 2, 32, 32 );
+    var sunTexture = new THREE.TextureLoader().load('sun.png');
+    var sunMaterial = new THREE.MeshBasicMaterial( { map: sunTexture } );
+    var sun = new THREE.Mesh( sunGeometry, sunMaterial );
+    scene.add( sun );
+    var sunLight = new THREE.PointLight(0xFDB813, 1, 100);
+    sunLight.position.set(0, 0, 0);
+    scene.add( sunLight );
+
+    /*Mercury: won't be changed much until matrix*/
+    var mercGeometry = new THREE.SphereGeometry( 0.383, 32, 32 );
+    var mercTexture = new THREE.TextureLoader().load('mercury.png');
+    var mercMaterial = new THREE.MeshBasicMaterial( { map: mercTexture } );
+    var mercury = new THREE.Mesh( mercGeometry, mercMaterial );
+    scene.add( mercury );
+    mercury.position.set(4, 0, 0);
+
+    /*venus: also won't be changed much*/
+    var venusGeometry = new THREE.SphereGeometry( 0.949, 32, 32 );
+    var venusMaterial = new THREE.MeshBasicMaterial( { color: 0x8B7D82 } );
+    var venus = new THREE.Mesh( venusGeometry, venusMaterial );
+    scene.add( venus );
+    venus.position.set(7, 0, 0);
+
+    /*the earth: oh boy...*/
+    var earthGeometry = new THREE.SphereGeometry( 1, 32, 32 );
+    var earthTexture = new THREE.TextureLoader().load('earth.png');
+    var earthMaterial = new THREE.MeshBasicMaterial( { map: earthTexture } );
+    var earth = new THREE.Mesh( earthGeometry, earthMaterial );
+    scene.add( earth );
+    earth.position.set(10, 0, 0);
+
+    /*the moon: double oh boy*/
+    var moonGeometry = new THREE.SphereGeometry( 0.2724, 32, 32 );
+    var moonTexture = new THREE.TextureLoader().load('moon.png');
+    var moonMaterial = new THREE.MeshBasicMaterial( { map: moonTexture  } );
+    var moon = new THREE.Mesh( moonGeometry, moonMaterial );
+    scene.add( moon );
+    moon.position.set(11.5, 0.5, 0);
+
+
+    /*mars deserves better, probably*/
+    var marsGeometry = new THREE.SphereGeometry( 0.532, 32, 32 );
+    var marsTexture = new THREE.TextureLoader().load('mars.png');
+    var marsMaterial = new THREE.MeshBasicMaterial( { map: marsTexture} );
+    var mars = new THREE.Mesh( marsGeometry, marsMaterial );
+    scene.add( mars );
+    mars.position.set(15, 0, 0);
+
+    /*the planets were going to be accurately sized until this guy ate half the screen*/
+    var jupiterGeometry = new THREE.SphereGeometry( 5.21, 32, 32 );
+    var jupiterTexture = new THREE.TextureLoader().load('jupiter.png');
+    var jupiterMaterial = new THREE.MeshBasicMaterial( { map: jupiterTexture} );
+    var jupiter = new THREE.Mesh( jupiterGeometry , jupiterMaterial );
+    scene.add( jupiter );
+    jupiter.position.set(25, 0, 0);
+
+    /*saturn probably doesn't need rings... maybe.*/
+    var saturnGeometry = new THREE.SphereGeometry( 4.45, 32, 32 );
+    var saturnMaterial = new THREE.MeshBasicMaterial( { color: 0xa0522d } );
+    var saturn = new THREE.Mesh( saturnGeometry, saturnMaterial );
+    scene.add( saturn );
+    saturn.position.set(40, 0, 0);
+
+    /*uranus is pretty cool*/
+    var uranusGeometry = new THREE.SphereGeometry( 3.01, 32, 32 );
+    var uranusMaterial = new THREE.MeshBasicMaterial( { color: 0xD5FBFC } );
+    var uranus = new THREE.Mesh( uranusGeometry, uranusMaterial );
+    scene.add( uranus );
+    uranus.position.set(55, 0, 0);
+
+    /*i'm running out of things to say about planets*/
+    var neptuneGeometry = new THREE.SphereGeometry( 2.88, 32, 32 );
+    var neptunMaterial = new THREE.MeshBasicMaterial( { color: 0x77a8ab } );
+    var neptune = new THREE.Mesh( neptuneGeometry, neptunMaterial );
+    scene.add( neptune );
+    neptune.position.set(70, 0, 0);
+
+    /*still a planet in my heart*/
+    var plutoGeometry = new THREE.SphereGeometry( 0.189, 32, 32 );
+    var plutoMaterial = new THREE.MeshBasicMaterial( { color: 0x9ca6b7 } );
+    var pluto = new THREE.Mesh( plutoGeometry, plutoMaterial );
+    scene.add( pluto );
+    pluto.position.set(100, 0, 0);
+
+
+    var cubeGeometry = new THREE.CubeGeometry(2, 2, 2);
+    var cubeEarth = new THREE.Mesh(cubeGeometry, earthMaterial);
+    scene.add(cubeEarth);
+    cubeEarth.position.set(-11, 0, 0);
+
+    var flatGeometry = new THREE.CircleGeometry(2, 32);
+    var flatEarth = new THREE.Mesh(flatGeometry, earthMaterial)
+    scene.add(flatEarth);
+    flatEarth.position.set(-22, 0, 0);
+
+    var planeGeo = new THREE.PlaneGeometry(1, 10, 10)
+    var planeMat = new THREE.MeshBasicMaterial( {color: 0x000000, side: THREE.DoubleSide} );
+    planeGeo.applyMatrix( new THREE.Matrix4().makeTranslation(2, 2, 2) );
+    var plane = new THREE.Mesh(planeGeo, planeMat);
+
+    camera.position.z = 75;
+    camera.position.y = 15;
+    camera.lookAt(new THREE.Vector3(0,0,0));
+
+    //positions all the planets with the sun in the middle
+    function helioCentric() {
+        //should only swap out these until later
+        sun.position.set(0, 0, 0);
+        sunLight.position.set(0, 0, 0);
+        earth.position.set(10, 0, 0);
+        moon.position.set(11.5, 0.5, 0);
+
+        //resets the other planet positions, just in case
+    }
+
+    //swaps out the sun and earth's positions
+    function earthCentric() {
+        //should only swap out these until later
+        sun.position.set(10, 0, 0);
+        sunLight.position.set(10, 0, 0);
+        earth.position.set(0, 0, 0);
+        moon.position.set(0, 0.5, 0);
+
+        //resets the other planet positions, just in case
+    }
+
+    //moves the moon far above the positive y axis so we can't see it
+    function noMoon() {
+        moon.position.set(11.5, 400, 0);
+    }
+
+    //puts the moon back near-ish earth
+    function yesMoon() {
+        earth.position.set(10, 0, 0);
+        moon.position.set(11.5, 0.5, 0);
+    }
+
+    //swaps out the current earth for a cube
+    function cubeEarth() {
+        cubeEarth.position.set(11, 0, 0);
+    }
+
+    //swaps out the current earth for a plane
+    function flatEarth() {
+
+    }
+
+    //swaps out the current earth for a sphere
+    function sphereEarth() {
+
+    }
+
+    //places the planets in a cellular membrane, funky
+    function cellMembrane() {
+
+    }
+
+    //swaps out the current earth for a turtle
+    function turtleEarth() {
+
+    }
+
+    //we broke the planets: swaps out all of their textures for a matrix
+    function enterMatrix() {
+
+    }
+
+    //zooms the camera: used once
+    function zoomCamera() {
+
+    }
+
+    function animate() {
+        requestAnimationFrame( animate );
+        sun.rotation.y += 0.01;
+        mercury.rotation.y += 0.01;
+        venus.rotation.y += 0.01;
+        earth.rotation.y += 0.02;
+        moon.rotation.y += 0.01;
+        mars.rotation.y += 0.01;
+        jupiter.rotation.y += 0.01;
+        saturn.rotation.y += 0.01;
+        uranus.rotation.y += 0.01;
+        neptune.rotation.y += 0.01;
+        pluto.rotation.y += 0.01;
+        //jupiter.position.z += Math.cos(time * 0.75);
+        renderer.render( scene, camera );
+    }
+    animate();
+
+</script>
+</body>
+</html>
